@@ -20,8 +20,8 @@
 #' cat <- image_data("23cd6aa4-9587-4a2e-8e26-de42885004c9", size = 128)[[1]]
 #' 
 #' # single image
-#' plot(1, 1, type="n", main="A cat herd")
-#' add_phylopic_base(cat, 0.5, 0.5, 0.2)
+#' plot(1, 1, type="n", main="A cat")
+#' add_phylopic_base(cat, 1, 1, 0.2)
 #' 
 #' # lots of images
 #' posx <- runif(50, 0, 1)
@@ -32,28 +32,33 @@
 #'   add_phylopic_base(cat, posx[i], posy[i], size[i])
 #' }
 #' 
-#' # plot a stand alone image of the silhouette
-#' plot_phylopic_base(cat)
+#' # Example using a cat background
+#' # setup plot area
+#' plot(posx, posy, type="n", main="A cat herd, on top of a cat",
+#'      xlim=c(0,1), ylim=c(0,1))
+#' # get a higher-resolution cat
+#' cat_hires <- image_data("23cd6aa4-9587-4a2e-8e26-de42885004c9", size = 512)[[1]]
+#' # plot background cat
+#' add_phylopic_base(cat_hires, 0.5, 0.5, 1, alpha=0.2)
+#' # overlay smaller cats
+#' for (i in 1:50) {
+#'   add_phylopic_base(cat, posx[i], posy[i], size[i], alpha=.8)
+#' }
 #' }
 add_phylopic_base <- function(img, x = NULL, y = NULL, ysize = NULL, 
                               alpha = 0.2, color = NULL) {
   # color and alpha the animal
   img <- recolor_phylopic(img, alpha, color)
-  
-  #number of x-y pixels for the logo (aspect ratio)
+
+  # work out the dimensions of the image
   dims <- dim(img)[1:2]
   AR <- dims[1] / dims[2]
-  graphics::par(usr = c(0, 1, 0, 1))
-  graphics::rasterImage(img, x - (ysize/2), 
-    y - (AR*ysize/2), x + (ysize/2), y + (AR*ysize/2), 
-    interpolate = TRUE)
-}
+  xsize <- AR * ysize
 
-#' @export
-#' @rdname add_phylopic_base
-plot_phylopic_base <- function(img, x = NULL, y = NULL, ysize = NULL, 
-                              alpha = 0.2, color = NULL) {
-
-  graphics::plot.new()
-  add_phylopic_base(img, x, y, ysize, alpha, color)
+  graphics::rasterImage(img,
+                        x - xsize/2,
+                        y - ysize/2,
+                        x + xsize/2,
+                        y + ysize/2,
+                        interpolate = TRUE)
 }

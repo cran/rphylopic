@@ -13,12 +13,17 @@ image_get(uuid, options = NULL, ...)
 
 image_list(start = 1, length = 10, options = NULL, ...)
 
-image_timerange(timestamp = "modified", from = NULL, to = NULL,
-  options = NULL, ...)
+image_timerange(
+  timestamp = "modified",
+  from = NULL,
+  to = NULL,
+  options = NULL,
+  ...
+)
 
 image_count(...)
 
-image_data(input, size)
+image_data(input, size, ...)
 }
 \arguments{
 \item{uuid}{One or more name UUIDs.}
