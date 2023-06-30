@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_phylopic_base.r
 \name{add_phylopic_base}
 \alias{add_phylopic_base}
-\title{Add a PhyloPic to a base R plot}
+\title{Add PhyloPics to a base R plot}
 \usage{
 add_phylopic_base(
   img = NULL,
@@ -12,73 +12,104 @@ add_phylopic_base(
   y = NULL,
   ysize = NULL,
   alpha = 1,
-  color = "black"
+  color = "black",
+  horizontal = FALSE,
+  vertical = FALSE,
+  angle = 0,
+  remove_background = TRUE
 )
 }
 \arguments{
-\item{img}{A Picture or png array object, e.g., from using
-\code{\link[=get_phylopic]{get_phylopic()}}.}
+\item{img}{A \link[grImport2:Picture-class]{Picture} or png array object, e.g.,
+from using \code{\link[=get_phylopic]{get_phylopic()}}.}
 
-\item{name}{A taxonomic name to be passed to \code{\link[=get_uuid]{get_uuid()}}.}
+\item{name}{\code{character}. A taxonomic name to be passed to \code{\link[=get_uuid]{get_uuid()}}.}
 
-\item{uuid}{A valid uuid for a PhyloPic silhouette (such as that returned
-by \code{\link[=get_uuid]{get_uuid()}} or \code{\link[=pick_phylopic]{pick_phylopic()}}).}
+\item{uuid}{\code{character}. A valid uuid for a PhyloPic silhouette (such as
+that returned by \code{\link[=get_uuid]{get_uuid()}} or \code{\link[=pick_phylopic]{pick_phylopic()}}).}
 
-\item{x}{x value of the silhouette center. Ignored if \code{y} and \code{ysize} are
-not specified.}
+\item{x}{\code{numeric}. x value of the silhouette center. Ignored if \code{y} and
+\code{ysize} are not specified.}
 
-\item{y}{y value of the silhouette center. Ignored if \code{x} and \code{ysize} are
-not specified.}
+\item{y}{\code{numeric}. y value of the silhouette center. Ignored if \code{x} and
+\code{ysize} are not specified.}
 
-\item{ysize}{Height of the silhouette. The width is determined by the
-aspect ratio of the original image. Ignored if \code{x} and \code{y} are not
-specified.}
+\item{ysize}{\code{numeric}. Height of the silhouette. The width is
+determined by the aspect ratio of the original image. Ignored if \code{x} and
+\code{y} are not specified.}
 
-\item{alpha}{A value between 0 and 1, specifying the opacity of the
-silhouette.}
+\item{alpha}{\code{numeric}. A value between 0 and 1, specifying the opacity
+of the silhouette (0 is fully transparent, 1 is fully opaque).}
 
-\item{color}{Color to plot the silhouette in.}
+\item{color}{\code{character}. Color to plot the silhouette in. If "original"
+is specified, the original color of the silhouette will be used (usually
+the same as "black").}
+
+\item{horizontal}{\code{logical}. Should the silhouette be flipped
+horizontally?}
+
+\item{vertical}{\code{logical}. Should the silhouette be flipped vertically?}
+
+\item{angle}{\code{numeric}. The number of degrees to rotate the silhouette
+clockwise. The default is no rotation.}
+
+\item{remove_background}{\code{logical}. Should any white background be
+removed from the silhouette(s)? See \code{\link[=recolor_phylopic]{recolor_phylopic()}} for details.}
 }
 \description{
-Specify an existing image, taxonomic name, or PhyloPic uuid to add a
-PhyloPic silhouette on top of an existing base R plot.
+Specify existing images, taxonomic names, or PhyloPic uuids to add PhyloPic
+silhouettes on top of an existing base R plot (like \code{\link[=points]{points()}}).
 }
 \details{
 One (and only one) of \code{img}, \code{name}, or \code{uuid} must be specified.
-Use parameters \code{x}, \code{y}, and \code{ysize} to place the silhouette at a
-specified position on the plot. If all three of these parameters are
-unspecified, then the silhouette will be plotted to the full height and
-width of the plot. The aspect ratio of the silhouette will always be
-maintained (even when a figure is resized). However, if the plot is
-resized afterwards, the absolute position of the silhouette may change.
+Use parameters \code{x}, \code{y}, and \code{ysize} to place the silhouette at a specified
+position on the plot. If all three of these parameters are unspecified,
+then the silhouette will be plotted to the full height and width of the
+plot. The aspect ratio of the silhouette will always be maintained (even
+when a plot is resized). However, if the plot is resized after plotting the
+silhouette, the absolute size and/or position of the silhouette may change.
+
+Any argument (except for \code{remove_background}) may be a vector of values if
+multiple silhouettes should be plotted. In this case, all other arguments
+may also be vectors of values, which will be recycled as necessary to the
+length of the longest vector argument.
+
+When specifying a horizontal and/or vertical flip \strong{and} a rotation, the
+flip(s) will always occur first. If you would like to customize this
+behavior, you can flip and/or rotate the image within your own workflow
+using \code{\link[=flip_phylopic]{flip_phylopic()}} and \code{\link[=rotate_phylopic]{rotate_phylopic()}}.
+
+Note that png array objects can only be rotated by multiples of 90 degrees.
 }
 \examples{
 # single image
-plot(1, 1, type="n", main="A cat")
-add_phylopic_base(name = "Cat", x = 1, y = 1, ysize = .4)
+plot(1, 1, type = "n", main = "A cat")
+add_phylopic_base(uuid = "23cd6aa4-9587-4a2e-8e26-de42885004c9",
+                  x = 1, y = 1, ysize = 0.4)
 
 # lots of images using a uuid
-posx <- runif(50, 0, 1)
-posy <- runif(50, 0, 1)
-size <- runif(50, 0.01, 0.2)
+posx <- runif(10, 0, 1)
+posy <- runif(10, 0, 1)
+size <- runif(10, 0.1, 0.3)
+angle <- runif(10, 0, 360)
+hor <- sample(c(TRUE, FALSE), 10, TRUE)
+ver <- sample(c(TRUE, FALSE), 10, TRUE)
+cols <- sample(c("black", "darkorange", "grey42", "white"), 10,
+               replace = TRUE)
 
-# Since we are plotting a lot of the same image, we should just save
-# the image in our environment first
-cat <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9")
-
-plot(posx, posy, type="n", main="A cat herd")
-for (i in 1:50) {
-  add_phylopic_base(cat, x = posx[i], y = posy[i], ysize = size[i])
-}
+plot(posx, posy, type = "n", main = "A cat herd")
+add_phylopic_base(uuid = "23cd6aa4-9587-4a2e-8e26-de42885004c9",
+                  x = posx, y = posy, ysize = size,
+                  color = cols, angle = angle,
+                  horizontal = hor, vertical = ver)
 
 # Example using a cat background
+cat <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9")
 # setup plot area
-plot(posx, posy, type="n", main="A cat herd, on top of a cat",
-     xlim=c(0,1), ylim=c(0,1))
+plot(posx, posy, type = "n", main = "A cat herd, on top of a cat",
+     xlim = c(0, 1), ylim = c(0, 1))
 # plot background cat
-add_phylopic_base(cat, alpha=0.2)
+add_phylopic_base(img = cat, alpha = 0.2)
 # overlay smaller cats
-for (i in 1:50) {
-  add_phylopic_base(cat, x = posx[i], y = posy[i], ysize = size[i], alpha=.8)
-}
+add_phylopic_base(img = cat, x = posx, y = posy, ysize = size, alpha = 0.8)
 }
