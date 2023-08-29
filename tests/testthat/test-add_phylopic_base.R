@@ -4,7 +4,7 @@ test_that("add_phylopic_base works", {
   # phylopic in background, with name
   expect_doppelganger("phylopic in background", function() {
     plot(1, 1, type = "n", main = "A cat")
-    add_phylopic_base(name = "Felis silvestris")
+    add_phylopic_base(name = "Felis silvestris", verbose = TRUE)
   })
 
   # png phylopic in background
@@ -12,7 +12,7 @@ test_that("add_phylopic_base works", {
     cat_png <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9",
                             format = "raster")
     plot(1, 1, type = "n", main = "A cat")
-    add_phylopic_base(cat_png, x = 1, y = 1, ysize = .4, color = "blue",
+    add_phylopic_base(cat_png, x = 1, y = 1, ysize = .4, fill = "blue",
                       alpha = .5, angle = -90, horizontal = TRUE)
   })
 
@@ -37,8 +37,15 @@ test_that("add_phylopic_base works", {
                       horizontal = hor, vertical = ver)
   })
 
+  # Expect warning
+  expect_warning(add_phylopic_base(name = "cat", verbose = FALSE))
+  expect_error(expect_warning(add_phylopic_base(name = "jkl;daf",
+                                                verbose = TRUE)))
+  expect_warning(add_phylopic_base(uuid = "jkl;daf", filter = "by"))
+  
   # Expect error
   expect_error(add_phylopic_base(img = "cat"))
+  expect_error(add_phylopic_base(img = cat, verbose = "yes"))
   expect_error(add_phylopic_base(cat, name = "cat"))
   expect_error(add_phylopic_base())
   expect_error(add_phylopic_base(cat, alpha = 3))

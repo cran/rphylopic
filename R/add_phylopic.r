@@ -8,6 +8,10 @@
 #' @param name \code{character}. A taxonomic name to be passed to [get_uuid()].
 #' @param uuid \code{character}. A valid uuid for a PhyloPic silhouette (such as
 #'   that returned by [get_uuid()] or [pick_phylopic()]).
+#' @param filter \code{character}. Filter by usage license if `name` is defined.
+#'   Use "by" to limit results to images which do not require attribution, "nc"
+#'   for images which allows commercial usage, and "sa" for images without a
+#'   ShareAlike clause. The user can also combine these filters as a vector.
 #' @param x \code{numeric}. x value of the silhouette center.
 #' @param y \code{numeric}. y value of the silhouette center.
 #' @param ysize \code{numeric}. Height of the silhouette. The width is
@@ -15,9 +19,13 @@
 #'   default, the height will be as tall as will fit within the plot area.
 #' @param alpha \code{numeric}. A value between 0 and 1, specifying the opacity
 #'   of the silhouette (0 is fully transparent, 1 is fully opaque).
-#' @param color \code{character}. Color to plot the silhouette in. If "original"
-#'   is specified, the original color of the silhouette will be used (usually
-#'   the same as "black").
+#' @param color \code{character}. Color of silhouette outline. If "original" or
+#'   NA is specified, the original color of the silhouette outline will be used
+#'   (usually the same as "transparent").
+#' @param fill \code{character}. Color of silhouette. If "original" is
+#'   specified, the original color of the silhouette will be used (usually the
+#'   same as "black"). If `color` is specified and `fill` is NA the outline and
+#'   fill color will be the same.
 #' @param horizontal \code{logical}. Should the silhouette be flipped
 #'   horizontally?
 #' @param vertical \code{logical}. Should the silhouette be flipped vertically?
@@ -25,6 +33,8 @@
 #'   clockwise. The default is no rotation.
 #' @param remove_background \code{logical}. Should any white background be
 #'   removed from the silhouette(s)? See [recolor_phylopic()] for details.
+#' @param verbose \code{logical}. Should the attribution information for the
+#'   used silhouette(s) be printed to the console (see [get_attribution()])?
 #' @details One (and only one) of `img`, `name`, or `uuid` must be specified.
 #'   Use parameters `x`, `y`, and `ysize` to place the silhouette at a specified
 #'   position on the plot. The aspect ratio of the silhouette will always be
@@ -41,6 +51,7 @@
 #'   using [flip_phylopic()] and [rotate_phylopic()].
 #'
 #'   Note that png array objects can only be rotated by multiples of 90 degrees.
+#'   Also, outline colors do not currently work for png array objects.
 #' @importFrom ggplot2 annotate
 #' @export
 #' @examples
@@ -68,16 +79,19 @@
 #'                color = cols, alpha = alpha, angle = angle,
 #'                horizontal = hor, vertical = ver)
 #' p + ggtitle("R Cat Herd!!")
-add_phylopic <- function(img = NULL, name = NULL, uuid = NULL,
+add_phylopic <- function(img = NULL, name = NULL, uuid = NULL, filter = NULL,
                          x, y, ysize = Inf,
-                         alpha = 1, color = "black",
+                         alpha = 1, color = "black", fill = NA,
                          horizontal = FALSE, vertical = FALSE, angle = 0,
-                         remove_background = TRUE) {
+                         remove_background = TRUE, verbose = FALSE) {
   if (all(sapply(list(img, name, uuid), is.null))) {
     stop("One of `img`, `name`, or `uuid` is required.")
   }
   if (sum(sapply(list(img, name, uuid), is.null)) < 2) {
     stop("Only one of `img`, `name`, or `uuid` may be specified")
+  }
+  if (!is.logical(verbose)) {
+    stop("`verbose` should be a logical value.")
   }
 
   # Make all variables the same length
@@ -89,15 +103,18 @@ add_phylopic <- function(img = NULL, name = NULL, uuid = NULL,
   ysize <- rep_len(ysize, max_len)
   alpha <- rep_len(alpha, max_len)
   color <- rep_len(color, max_len)
+  fill <- rep_len(fill, max_len)
   horizontal <- rep_len(horizontal, max_len)
   vertical <- rep_len(vertical, max_len)
   angle <- rep_len(angle, max_len)
 
   # Put together all of the variables
-  args <- list(geom = GeomPhylopic, x = x, y = y, size = ysize,
-               alpha = alpha, color = color,
+  args <- list(geom = GeomPhylopic,
+               x = x, y = y, size = ysize,
+               alpha = alpha, color = color, fill = fill,
                horizontal = horizontal, vertical = vertical, angle = angle,
-               remove_background = remove_background)
+               remove_background = remove_background, verbose = verbose,
+               filter = list(filter))
   # Only include the one silhouette argument
   if (!is.null(img)) {
     if (is.list(img)) {

@@ -16,6 +16,10 @@ utils::globalVariables(c("x", "y", "uuid", "label"))
 #'   of available images, all available uuids will be returned. Defaults to 5.
 #' @param view \code{numeric}. Number of silhouettes that should be plotted at
 #'   the same time. Defaults to 1.
+#' @param filter \code{character}. Filter uuid(s) by usage license. Use "by"
+#'   to limit results to image uuids which do not require attribution, "nc"
+#'   for image uuids which allow commercial usage, and "sa" for image uuids
+#'   without a ShareAlike clause. The user can also combine these filters.
 #' @param auto \code{numeric}. This argument allows the user to automate input
 #'   into the menu choice. If the input value is `1`, the first returned image
 #'   will be selected. If the input value is `2`, requested images will be
@@ -48,7 +52,8 @@ utils::globalVariables(c("x", "y", "uuid", "label"))
 #' # 3 x 3 pane layout
 #' img <- pick_phylopic(name = "Scleractinia", n = 9, view = 9)
 #' }
-pick_phylopic <- function(name = NULL, n = 5, view = 1, auto = NULL) {
+pick_phylopic <- function(name = NULL, n = 5, view = 1,
+                          filter = NULL, auto = NULL) {
   # Error handling
   if (!is.null(auto) && !auto %in% c(1, 2)) {
     stop("`auto` must be of value: NULL, 1, or 2")
@@ -76,7 +81,7 @@ pick_phylopic <- function(name = NULL, n = 5, view = 1, auto = NULL) {
   }
 
   # Get uuids
-  uuids <- get_uuid(name = name, n = n, url = FALSE)
+  uuids <- get_uuid(name = name, n = n, filter = filter, url = FALSE)
   # Record length
   n_uuids <- length(uuids)
 
@@ -95,8 +100,8 @@ pick_phylopic <- function(name = NULL, n = 5, view = 1, auto = NULL) {
 
   # Suppress warnings when there is an uneven split
   if ((length(uuids) %% view) != 0) {
-    uuids <- suppressWarnings(
-      split(x = uuids, f = ceiling(seq_along(uuids) / view)))
+    uuids <- suppressWarnings(split(x = uuids,
+                                    f = ceiling(seq_along(uuids) / view)))
   } else {
     uuids <- split(x = uuids, f = ceiling(seq_along(uuids) / view))
   }
@@ -146,8 +151,9 @@ pick_phylopic <- function(name = NULL, n = 5, view = 1, auto = NULL) {
                                         size = 11,
                                         color = "purple"))
       print(p)
-      m <- menu(choices = c(att_string, "Next"), title = paste0(
-        "Choose an option (", i, "/", ceiling(n_uuids / view), " pages):"))
+      m <- menu(choices = c(att_string, "Next"),
+                title = paste0("Choose an option (", i, "/",
+                               ceiling(n_uuids / view), " pages):"))
       if (m == 0) return()
     } else {
       # Select final uuid

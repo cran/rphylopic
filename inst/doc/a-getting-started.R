@@ -31,7 +31,7 @@ uuid <- get_uuid(name = "Canis lupus", n = 5)
 #  # It's difficult without seeing the image itself, let's use:
 #  img <- pick_phylopic(name = "Canis lupus", n = 4, view = 4)
 
-## -----------------------------------------------------------------------------
+## ----warning = FALSE----------------------------------------------------------
 # OK, now we've got the image we want... let's add it to a plot!
 plot(x = 1, y = 1, type = "n", ann = FALSE)
 add_phylopic_base(img = img, x = 1.25, y = 1.25, ysize = 0.25)
@@ -43,7 +43,7 @@ add_phylopic_base(uuid = uuid, x = 1, y = 1, ysize = 0.25)
 # What about just using the first image linked to the name? Definitely!
 add_phylopic_base(name = "Canis lupus", x = 0.75, y = 0.75, ysize = 0.25)
 
-## -----------------------------------------------------------------------------
+## ----warning = FALSE----------------------------------------------------------
 library(ggplot2)
 p <- ggplot() +
   coord_cartesian(xlim = c(0.6, 1.4), ylim = c(0.6, 1.4)) +
@@ -56,7 +56,6 @@ p <- p + add_phylopic(uuid = uuid, x = 1, y = 1, ysize = 0.25)
 # What about just using the first image linked to the name? Definitely!
 p + add_phylopic(name = "Canis lupus", x = 0.75, y = 0.75, ysize = 0.25)
 
-
 ## -----------------------------------------------------------------------------
 # Flip silhouette horizontally
 img_flip <- flip_phylopic(img = img, horizontal = TRUE, vertical = FALSE)
@@ -67,7 +66,8 @@ img_rot <- rotate_phylopic(img = img, angle = 45)
 
 ## -----------------------------------------------------------------------------
 # Change color to blue and transparency to 50%
-img_col <- recolor_phylopic(img = img, alpha = 0.5, color = "blue")
+img_col <- recolor_phylopic(img = img, alpha = 0.5,
+                            color = "blue", fill = "blue")
 
 ## -----------------------------------------------------------------------------
 ggplot() +
@@ -82,6 +82,12 @@ ggplot() +
 uuid <- get_uuid(name = "Nycticebus")
 # Get attribution data for uuid
 get_attribution(uuid = uuid)
+
+## -----------------------------------------------------------------------------
+# Get valid uuid
+uuid <- get_uuid(name = "Nycticebus")
+# Get attribution data for uuid
+get_attribution(uuid = uuid, text = TRUE)
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  # How do I save an image?

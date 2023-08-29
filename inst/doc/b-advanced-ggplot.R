@@ -31,8 +31,18 @@ ggplot(penguins_subset) +
   theme_bw(base_size = 15)
 
 ## -----------------------------------------------------------------------------
+silhouette_df <- data.frame(x = 59, y = 215, species = "Adelie")
 ggplot(penguins_subset) +
-  geom_phylopic(img = list(penguin_rot),
+  geom_point(aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_phylopic(data = silhouette_df, aes(x = x, y = y), size = 30,
+                img = penguin_rot) +
+  labs(x = "Bill length (mm)", y = "Flipper length (mm)") +
+  facet_wrap(~species, ncol = 1) +
+  theme_bw(base_size = 15)
+
+## -----------------------------------------------------------------------------
+ggplot(penguins_subset) +
+  geom_phylopic(img = penguin_rot,
                 aes(x = bill_length_mm, y = flipper_length_mm)) +
   labs(x = "Bill length (mm)", y = "Flipper length (mm)") +
   facet_wrap(~species, ncol = 1) +
@@ -40,7 +50,7 @@ ggplot(penguins_subset) +
 
 ## -----------------------------------------------------------------------------
 ggplot(penguins_subset) +
-  geom_phylopic(img = list(penguin_rot),
+  geom_phylopic(img = penguin_rot,
                 aes(x = bill_length_mm, y = flipper_length_mm,
                     size = body_mass_g)) +
   labs(x = "Bill length (mm)", y = "Flipper length (mm)") +
@@ -49,14 +59,29 @@ ggplot(penguins_subset) +
 
 ## -----------------------------------------------------------------------------
 ggplot(penguins_subset) +
-  geom_phylopic(img = list(penguin_rot),
+  geom_phylopic(img = penguin_rot,
                 aes(x = bill_length_mm, y = flipper_length_mm,
-                    size = body_mass_g, colour = sex),
+                    size = body_mass_g, color = sex),
                 show.legend = TRUE) +
   labs(x = "Bill length (mm)", y = "Flipper length (mm)") +
   scale_size_continuous(guide = "none") +
-  scale_colour_manual("Sex", values = c("orange", "blue"),
-                      labels = c("Female", "Male")) +
+  scale_color_manual("Sex", values = c("orange", "blue"),
+                     labels = c("Female", "Male")) +
+  facet_wrap(~species, ncol = 1) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = c(0.9, 0.9))
+
+## -----------------------------------------------------------------------------
+ggplot(penguins_subset) +
+  geom_phylopic(img = penguin_rot,
+                aes(x = bill_length_mm, y = flipper_length_mm,
+                    size = body_mass_g, color = sex),
+                show.legend = TRUE,
+                key_glyph = phylopic_key_glyph(img = penguin_rot)) +
+  labs(x = "Bill length (mm)", y = "Flipper length (mm)") +
+  scale_size_continuous(guide = "none") +
+  scale_color_manual("Sex", values = c("orange", "blue"),
+                     labels = c("Female", "Male")) +
   facet_wrap(~species, ncol = 1) +
   theme_bw(base_size = 15) +
   theme(legend.position = c(0.9, 0.9))
@@ -79,20 +104,20 @@ world <- map_data(map = "world")
 # Make map
 ggplot() +
   geom_polygon(data = world, aes(x = long, y = lat, group = group),
-               fill = "lightgray", colour = "darkgrey", linewidth = 0.1) +
+               fill = "lightgray", color = "darkgrey", linewidth = 0.1) +
   geom_point(data = tetrapods, aes(x = lng, y = lat),
-             size = 4, alpha = 0.75, colour = "blue") +
+             size = 4, alpha = 0.75, color = "blue") +
   theme_void() +
-  coord_quickmap()
+  coord_sf()
 
-## ----fig.height = 3.5---------------------------------------------------------
+## ----fig.height = 3.5, warning = FALSE----------------------------------------
 ggplot() +
   geom_polygon(data = world, aes(x = long, y = lat, group = group),
-               fill = "lightgray", colour = "darkgrey", linewidth = 0.1) +
+               fill = "lightgray", color = "darkgrey", linewidth = 0.1) +
   geom_phylopic(data = tetrapods, aes(x = lng, y = lat, name = genus),
-                size = 4, alpha = 0.75, colour = "blue") +
+                size = 4, alpha = 0.75, color = "blue") +
   theme_void() +
-  coord_quickmap()
+  coord_sf()
 
 ## ----message = FALSE----------------------------------------------------------
 # Load libraries
@@ -109,7 +134,7 @@ vertebrate_data <- data.frame(species = vertebrate.tree$tip.label, uuid = NA)
 vertebrate_data$uuid <- sapply(vertebrate.tree$tip.label,
                                function(x) {
                                  tryCatch(get_uuid(x), error = function(e) NA)
-                                 })
+                               })
 vertebrate_data
 
 ## -----------------------------------------------------------------------------

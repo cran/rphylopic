@@ -48,6 +48,21 @@ par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
 # Loop over the species and create a plot for each one
 for (i in seq_along(species_split)) {
   species_data <- species_split[[i]]
+  plot(x = species_data$bill_length_mm, y = species_data$flipper_length_mm,
+       xlab = "Bill length (mm)", ylab = "Flipper length (mm)",
+       main = names(species_split)[i],
+       xlim = range(penguins_subset$bill_length_mm, na.rm = TRUE),
+       ylim = range(penguins_subset$flipper_length_mm, na.rm = TRUE))
+  if (i == 1) add_phylopic_base(img = penguin_rot, x = 59, y = 215, ysize = 30)
+}
+
+## -----------------------------------------------------------------------------
+# Set up the plot area
+par(mfrow = c(3, 1), mar = c(4, 4, 2, 1))
+
+# Loop over the species and create a plot for each one
+for (i in seq_along(species_split)) {
+  species_data <- species_split[[i]]
   plot(NA, xlab = "Bill length (mm)", ylab = "Flipper length (mm)",
        main = names(species_split)[i],
        xlim = range(penguins_subset$bill_length_mm, na.rm = TRUE),
@@ -87,18 +102,17 @@ for (i in seq_along(species_split)) {
                     y = species_data$flipper_length_mm,
                     ysize = species_data$body_mass_g /
                       max(penguins_subset$body_mass_g, na.rm = TRUE) * 8,
-                    col = ifelse(species_data$sex == "male", "blue", "orange"))
+                    color = ifelse(species_data$sex == "male", "blue", "orange"))
 }
 
 # Add a legend to the last plot
 legend("bottomright", legend = c("Female", "Male"), pch = 20,
        col = c("orange", "blue"), bty = "n")
 
-## ----message = FALSE----------------------------------------------------------
+## ----message = FALSE, warning = FALSE-----------------------------------------
 # Load libraries
 library(rphylopic)
-library(raster)
-library(geodata)
+library(maps)
 library(palaeoverse)
 # Get occurrence data
 data(tetrapods)
@@ -108,15 +122,14 @@ data(tetrapods)
 tetrapods <- subset(tetrapods, genus == "Mesosaurus")
 
 ## ----fig.height = 5, message = FALSE------------------------------------------
-# Get map data from geodata
-world <- world(path = tempdir())
-# Make map
-plot(world, col = "lightgrey", border = "darkgrey", lwd = 0.25, axes = FALSE)
+# Plot map
+map("world", col = "lightgrey", fill = TRUE)
+# Plot points
 points(x = tetrapods$lng, y = tetrapods$lat, cex = 2, pch = 16,
        col = rgb(red = 0, green = 0, blue = 1, alpha = 0.75))
 
-## ----fig.height = 5-----------------------------------------------------------
-plot(world, col = "lightgrey", border = "darkgrey", lwd = 0.25, axes = FALSE)
+## ----fig.height = 5, warning = FALSE------------------------------------------
+map("world", col = "lightgrey", fill = TRUE)
 add_phylopic_base(name = "Mesosaurus", x = tetrapods$lng, y = tetrapods$lat,
                   ysize = 8, color = "blue", alpha = 0.75)
 
@@ -135,7 +148,7 @@ vertebrate_data <- data.frame(species = vertebrate.tree$tip.label, uuid = NA)
 vertebrate_data$uuid <- sapply(vertebrate.tree$tip.label,
                                function(x) {
                                  tryCatch(get_uuid(x), error = function(e) NA)
-                                 })
+                               })
 vertebrate_data
 
 ## -----------------------------------------------------------------------------

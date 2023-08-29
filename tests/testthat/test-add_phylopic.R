@@ -2,10 +2,11 @@ suppressPackageStartupMessages(library(ggplot2, quietly = TRUE))
 
 test_that("add_phylopic works", {
   skip_if_offline(host = "api.phylopic.org")
+  try(dev.off(), silent = TRUE) # clean up any stray plots
 
   # phylopic in background, with name
   p <- ggplot(iris) +
-    add_phylopic(x = 6.1, y = 3.2, name = "Iris", alpha = 0.2) +
+    add_phylopic(x = 6.1, y = 3.2, name = "Iris", alpha = 0.2, verbose = TRUE) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width))
   expect_doppelganger("phylopic in background", p)
 
@@ -27,14 +28,14 @@ test_that("add_phylopic works", {
   hor <- sample(c(TRUE, FALSE), 50, TRUE)
   ver <- sample(c(TRUE, FALSE), 50, TRUE)
   cols <- sample(c("black", "darkorange", "grey42", "white"), 50,
-    replace = TRUE)
+                 replace = TRUE)
   alpha <- runif(50, 0, 1)
 
   p <- ggplot(data.frame(cat.x = posx, cat.y = posy), aes(cat.x, cat.y)) +
     geom_blank() +
     add_phylopic(uuid = "23cd6aa4-9587-4a2e-8e26-de42885004c9",
                  x = posx, y = posy, ysize = sizey,
-                 color = cols, alpha = alpha,
+                 fill = cols, alpha = alpha,
                  angle = angle, horizontal = hor, vertical = ver)
   p <- p + ggtitle("R Cat Herd!!")
   expect_doppelganger("phylopics on top of plot", p)
