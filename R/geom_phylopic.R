@@ -163,9 +163,9 @@ GeomPhylopic <- ggproto("GeomPhylopic", Geom,
           text <- paste0("`name` ", '"', name, '"')
           if (!is.null(params$filter)) {
             text <- paste0(text, " with `filter` ", '"',
-                           paste0(filter, collapse = "/"), '"')
+                           paste0(params$filter, collapse = "/"), '"')
           }
-          warning(paste0(text, " returned no PhyloPic results."))
+          warning(paste0(text, " returned no PhyloPic results."), call. = FALSE)
           return(NULL)
         }
         get_phylopic(uuid)
@@ -197,7 +197,7 @@ GeomPhylopic <- ggproto("GeomPhylopic", Geom,
                    "vector image) or class array (for a raster image)."))
       }
     }
-    if (params$verbose) {
+    if (params$verbose && length(Filter(Negate(is.null), imgs)) > 0) {
       get_attribution(img = imgs, text = TRUE)
     }
     data$name <- NULL

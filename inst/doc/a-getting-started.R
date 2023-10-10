@@ -26,7 +26,7 @@ img <- get_phylopic(uuid = uuid)
 # But multiple silhouettes can exist per species...
 uuid <- get_uuid(name = "Canis lupus", n = 5)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # How do I pick?!
 #  # It's difficult without seeing the image itself, let's use:
 #  img <- pick_phylopic(name = "Canis lupus", n = 4, view = 4)
@@ -89,7 +89,7 @@ uuid <- get_uuid(name = "Nycticebus")
 # Get attribution data for uuid
 get_attribution(uuid = uuid, text = TRUE)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # How do I save an image?
 #  # Get image
 #  img <- pick_phylopic(name = "Phascolarctos cinereus", n = 1)

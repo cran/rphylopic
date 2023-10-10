@@ -12,11 +12,11 @@ library(palmerpenguins)
 data(penguins)
 penguins_subset <- subset(penguins, !is.na(sex))
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # Pick a silhouette for Pygoscelis (here we pick #2)
 #  penguin <- pick_phylopic("Pygoscelis", n = 3, view = 3)
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 penguin <- get_phylopic("86334821-42ec-4da1-bb9d-53f3d6941c77")
 
 ## -----------------------------------------------------------------------------
