@@ -30,9 +30,10 @@
 #'   [pick_phylopic] to visually select the desired uuid/url.
 #' @importFrom stats setNames
 #' @export
-#' @examples
+#' @examples \dontrun{
 #' uuid <- get_uuid(name = "Acropora cervicornis")
 #' uuid <- get_uuid(name = "Dinosauria", n = 5, url = TRUE)
+#' }
 get_uuid <- function(name = NULL, img = NULL, n = 1, filter = NULL,
                      url = FALSE) {
   # Handle img -----------------------------------------------------------
@@ -67,7 +68,7 @@ get_uuid <- function(name = NULL, img = NULL, n = 1, filter = NULL,
   if (!is.logical(url)) {
     stop("`url` should be of class logical.")
   }
-  # Normalise name -------------------------------------------------------
+  # Normalize name -------------------------------------------------------
   name <- tolower(name)
   name <- gsub("_", " ", name)
   # API call -------------------------------------------------------------
@@ -106,7 +107,11 @@ get_uuid <- function(name = NULL, img = NULL, n = 1, filter = NULL,
   if ("nc" %in% filter) opts$filter_license_nc <- "false"
   if ("sa" %in% filter) opts$filter_license_sa <- "false"
   api_return <- phy_GET("images", opts)
-  total_items <- api_return$totalItems
+  if ("totalItems" %in% names(api_return)) {
+    total_items <- api_return$totalItems
+  } else {
+    stop("No images matching the specified `filter`.")
+  }
   if (total_items < n) {
     warning(paste0("Only ", total_items, " item(s) are available."))
     n <- total_items

@@ -20,13 +20,14 @@
 #'   `TRUE`, a text paragraph with the contributor name, year of contribution,
 #'    and license type is returned.
 #' @importFrom knitr combine_words
+#' @importFrom utils packageVersion
 #' @export
-#' @examples
+#' @examples \dontrun{
 #' # Get valid uuid
 #' uuid <- get_uuid(name = "Acropora cervicornis")
 #' # Get attribution data for uuid
 #' attri <- get_attribution(uuid = uuid)
-#' \dontrun{
+#' 
 #' # Get list of valid uuids
 #' uuids <- get_uuid(name = "Scleractinia", n = 5)
 #' # Get attribution data for uuids
@@ -125,7 +126,9 @@ get_attribution <- function(uuid = NULL, img = NULL, text = FALSE) {
   }
   if (text) {
     att <- paste0("Organism silhouettes are from PhyloPic ",
-                  "(https://www.phylopic.org/; T. Michael Keesey, 2023). ",
+                  "(https://www.phylopic.org/; T. Michael Keesey, 2023) ",
+                  "and were added using the rphylopic R package ver. ",
+                  packageVersion("rphylopic"), " (Gearty & Jones, 2023). ",
                   att)
     return(message(att))
   }

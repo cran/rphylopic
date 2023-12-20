@@ -1,3 +1,13 @@
+# rphylopic 1.3.0
+
+* updated citation
+* added warning when specified size is more than 1000 times smaller than the y-axis range (mostly useful for when making maps with coord_sf) (#86)
+* changed the defaults and behavior of the color and fill argument/aesthetics to better maintain backwards compatibility but also prevent unnecessary outlines (#87)
+* added resolve_phylopic (#66)
+* pick_phylopic now accepts a list of uuids via the uuid argument (#95)
+* fixed check behavior on CRAN (all tests and examples are now skipped)
+* caught a rare error when nothing matched `filter`
+
 # rphylopic 1.2.2
 
 * vignettes are now precompiled

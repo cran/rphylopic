@@ -14,15 +14,16 @@ phylopic_env <- new.env()
 #'   specifies the height of the silhouettes in the units of the y axis. The
 #'   aspect ratio of the silhouettes will always be maintained.
 #'
-#'   The `color` (default: "black"), `fill` (default: NA), and `alpha` (default:
-#'   1) aesthetics can be used to change the outline color, fill color, and
-#'   transparency (outline and fill) of the silhouettes, respectively. If
-#'   `color` is specified and `fill` is NA the outline and fill color will be
-#'   the same. If "original" is specified for the `color` aesthetic, the
-#'   original color of the silhouette outline will be used (usually the same as
-#'   "transparent"). If "original" is specified for the `fill` aesthetic, the
-#'   original color of the silhouette body will be used (usually the same as
-#'   "black").
+#'   The `color` (default: NA), `fill` (default: "black"), and `alpha` (
+#'   default: 1) aesthetics can be used to change the outline color, fill color,
+#'   and transparency (outline and fill) of the silhouettes, respectively. If
+#'   `color` is specified and `fill` is NA `color` will be used as the fill
+#'   color (for backwards compatibility). If "original" is specified for the
+#'   `color` aesthetic, the original color of the silhouette outline will be
+#'   used (usually the same as "transparent"). If "original" is specified for
+#'   the `fill` aesthetic, the original color of the silhouette body will be
+#'   used (usually the same as "black"). To remove the fill or outline, you can
+#'   set `fill` or `color` to "transparent", respectively.
 #'
 #'   The `horizontal` and `vertical` aesthetics can be used to flip the
 #'   silhouettes. The `angle` aesthetic can be used to rotate the silhouettes.
@@ -60,21 +61,20 @@ phylopic_env <- new.env()
 #' @param filter \code{character}. Filter by usage license if using the `name`
 #'   aesthetic. Use "by" to limit results to images which do not require
 #'   attribution, "nc" for images which allows commercial usage, and "sa" for
-#'   images without a ShareAlike clause. The user can also combine these
-#'   filters as a vector.
+#'   images without a ShareAlike clause. The user can also combine these filters
+#'   as a vector.
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_point
 #' @inheritParams pick_phylopic
 #' @importFrom ggplot2 layer
 #' @export
-#' @examples
-#' \dontrun{
+#' @examples \dontrun{
 #' library(ggplot2)
 #' df <- data.frame(x = c(2, 4), y = c(10, 20),
 #'                  name = c("Felis silvestris catus", "Odobenus rosmarus"))
 #' ggplot(df) +
 #'   geom_phylopic(aes(x = x, y = y, name = name),
-#'                 color = "purple", size = 10) +
+#'                 fill = "purple", size = 10) +
 #'   facet_wrap(~name) +
 #'   coord_cartesian(xlim = c(1,6), ylim = c(5, 30))
 #' }
@@ -120,11 +120,10 @@ geom_phylopic <- function(mapping = NULL, data = NULL,
 #' @importFrom grid gTree gList nullGrob
 GeomPhylopic <- ggproto("GeomPhylopic", Geom,
   required_aes = c("x", "y"),
-  non_missing_aes = c("size", "alpha", "color",
+  non_missing_aes = c("size", "alpha", "color", "fill",
                       "horizontal", "vertical", "angle"),
   optional_aes = c("img", "name", "uuid"), # one and only one of these
-  default_aes = aes(size = 6, alpha = 1,
-                    color = "black", fill = NA,
+  default_aes = aes(size = 6, alpha = 1, color = NA, fill = "black",
                     horizontal = FALSE, vertical = FALSE, angle = 0),
   extra_params = c("na.rm", "remove_background", "verbose", "filter"),
   setup_data = function(data, params) {
@@ -212,6 +211,7 @@ GeomPhylopic <- ggproto("GeomPhylopic", Geom,
     data <- ggproto_parent(Geom, self)$use_defaults(data, params, modifiers)
     if (col_fill[1] && !col_fill[2]) {
       data$fill <- data$colour
+      data$colour <- NA
     }
     data
   },
@@ -232,14 +232,21 @@ GeomPhylopic <- ggproto("GeomPhylopic", Geom,
     # Calculate height as percentage of y limits
     # (or r limits for polar coordinates)
     if ("y.range" %in% names(panel_params)) {
-      heights <- data$size / diff(panel_params$y.range)
+      y_diff <- diff(panel_params$y.range)
     } else if ("y_range" %in% names(panel_params)) { # exclusive to coord_sf
-      heights <- data$size / diff(panel_params$y_range)
+      y_diff <- diff(panel_params$y_range)
     } else if ("r.range" %in% names(panel_params)) { # exclusive to coord_polar
-      heights <- data$size / diff(panel_params$r.range)
+      y_diff <- diff(panel_params$r.range)
     } else {
-      heights <- data$size
+      y_diff <- 1
     }
+    if (any(data$size < (y_diff / 1000))) {
+      warning(paste("Your specified silhouette `size`(s) are more than 1000",
+                    "times smaller than your y-axis range. You probably want",
+                    "to use a larger `size`."), call. = FALSE)
+    }
+    heights <- data$size / y_diff
+
     # Hack to make silhouettes the full height of the plot
     heights[is.infinite(heights)] <- 1
 

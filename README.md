@@ -1,8 +1,8 @@
 # rphylopic <img src="man/figures/logo.png" align="right" alt="" width="120">
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/palaeoverse-community/rphylopic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/palaeoverse-community/rphylopic/actions/workflows/R-CMD-check.yaml)
-[![codecov](https://codecov.io/gh/palaeoverse-community/rphylopic/branch/main/graph/badge.svg?token=HQQO2CRIKT)](https://app.codecov.io/gh/palaeoverse-community/rphylopic)
+[![R-CMD-check](https://github.com/palaeoverse/rphylopic/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/palaeoverse/rphylopic/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/palaeoverse/rphylopic/branch/main/graph/badge.svg?token=HQQO2CRIKT)](https://app.codecov.io/gh/palaeoverse-community/rphylopic)
 [![CRAN status](https://www.r-pkg.org/badges/version/rphylopic)](https://CRAN.R-project.org/package=rphylopic)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/rphylopic)](https://cran.r-project.org/package=rphylopic)
 [![Twitter URL](https://img.shields.io/twitter/follow/:ThePalaeoverse)](https://twitter.com/intent/follow?screen_name=ThePalaeoverse)
@@ -26,7 +26,7 @@ The development version of `rphylopic` can be installed via GitHub using:
 
 ```r
 install.packages("remotes")
-remotes::install_github("palaeoverse-community/rphylopic")
+remotes::install_github("palaeoverse/rphylopic")
 ```
 
 # How does it work?
@@ -126,7 +126,7 @@ As with any community project, society, or meeting we feel it is important to es
 
 If you use the `rphylopic` package in your work, please acknowledge the contributors responsible for the image, acknowledge the creator of PhyloPic ([Michael Keesey](http://tmkeesey.net)), and cite the following for `rphylopic`:
 
-Gearty, W. and Jones, L.A. 2023. rphylopic: An R package for fetching, transforming, and visualising PhyloPic silhouettes. bioRxiv. doi: 10.1101/2023.06.22.546191.
+Gearty, W. and Jones, L.A. 2023. rphylopic: An R package for fetching, transforming, and visualising PhyloPic silhouettes. Methods in Ecology and Evolution, 14(11), 2700-2708. doi: 10.1111/2041-210X.14221.
 
 # Cheat sheet
 
