@@ -1,3 +1,8 @@
+# rphylopic 1.4.0
+
+* Added add_phylopic_legend (#83)
+* Added permalink generation option to get_attribution (#81)
+
 # rphylopic 1.3.0
 
 * updated citation
