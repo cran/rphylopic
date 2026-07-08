@@ -1,5 +1,5 @@
 test_that("get_attribution works", {
-  skip_if_offline(host = "api.phylopic.org")
+  skip_if_offline(host = phost())
   # Get valid uuid
   uuid <- get_uuid(name = "Acropora cervicornis")
   # Expect true
@@ -17,7 +17,7 @@ test_that("get_attribution works", {
   expect_true("permalink" %in% names(perm))
   expect_message(get_attribution(uuid = uuid, text = TRUE, permalink = TRUE))
   ## one uuid handling
-  expect_equal(length(get_attribution(uuid = uuid[1], 
+  expect_equal(length(get_attribution(uuid = uuid[1],
                                       text = TRUE, permalink = TRUE)), 3)
 
   # Expect error

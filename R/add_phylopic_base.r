@@ -77,7 +77,7 @@
 #' @importFrom grid grid.raster
 #' @importFrom grImport2 grid.picture
 #' @importFrom methods is slotNames
-#' @importFrom lifecycle deprecated
+#' @importFrom lifecycle deprecated deprecate_stop is_present
 #' @export
 #' @examples \dontrun{
 #' # single image
@@ -138,11 +138,10 @@ add_phylopic_base <- function(img = NULL, name = NULL, uuid = NULL,
     stop("`verbose` should be a logical value.")
   }
   if (lifecycle::is_present(ysize)) {
-    lifecycle::deprecate_warn("1.5.0", "add_phylopic_base(ysize)",
+    lifecycle::deprecate_stop("1.5.0", "add_phylopic_base(ysize)",
                               "add_phylopic_base(height)")
-    if (is.null(height)) height <- ysize
   }
-  if (!is.null(height) & !is.null(width)) {
+  if (!is.null(height) && !is.null(width)) {
     stop("At least one of `height` or `width` must be NULL.")
   }
 
@@ -204,9 +203,7 @@ add_phylopic_base <- function(img = NULL, name = NULL, uuid = NULL,
   # get plot limits
   usr <- par()$usr
   usr_x <- if (par()$xlog) 10^usr[1:2] else usr[1:2]
-  #usr_x <- usr[1:2]
   usr_y <- if (par()$ylog) 10^usr[3:4] else usr[3:4]
-  #usr_y <- usr[3:4]
 
   # set default position and dimensions if need be
   if (is.null(x)) {
@@ -221,11 +218,11 @@ add_phylopic_base <- function(img = NULL, name = NULL, uuid = NULL,
     height <- abs(diff(usr_y))
     width <- abs(diff(usr_x))
   }
-  
+
   # convert x and y to normalized device coordinates
   x <- grconvertX(x, to = "ndc")
   y <- grconvertY(y, to = "ndc")
-  
+
   # convert width and/or height to normalized device coordinates if need be
   if (!is.null(height)) {
     if (any(height < (abs(diff(usr[3:4])) / 1000), na.rm = TRUE)) {
@@ -253,7 +250,7 @@ add_phylopic_base <- function(img = NULL, name = NULL, uuid = NULL,
     }
     width <- grconvertX(width, to = "ndc") - base_x
   }
-  
+
   # change NULLs to NAs
   if (is.null(width)) width <- NA
   if (is.null(height)) height <- NA
@@ -281,22 +278,25 @@ add_phylopic_base <- function(img = NULL, name = NULL, uuid = NULL,
     # grobify and plot
     if (is(img, "Picture")) { # svg
       if ("summary" %in% slotNames(img) &&
-          all(c("xscale", "yscale") %in% slotNames(img@summary)) &&
-          is.numeric(img@summary@xscale) && length(img@summary@xscale) == 2 &&
-          all(is.finite(img@summary@xscale)) && diff(img@summary@xscale) != 0 &&
-          is.numeric(img@summary@yscale) && length(img@summary@yscale) == 2 &&
-          all(is.finite(img@summary@yscale)) && diff(img@summary@yscale) != 0) {
+            all(c("xscale", "yscale") %in% slotNames(img@summary)) &&
+            is.numeric(img@summary@xscale) &&
+            length(img@summary@xscale) == 2 &&
+            all(is.finite(img@summary@xscale)) &&
+            diff(img@summary@xscale) != 0 &&
+            is.numeric(img@summary@yscale) &&
+            length(img@summary@yscale) == 2 &&
+            all(is.finite(img@summary@yscale)) &&
+            diff(img@summary@yscale) != 0) {
         grid.picture(img, x = x, y = y, height = height, width = width,
                      expansion = 0, hjust = hjust, vjust = vjust,
                      delayContent = TRUE)
       } else {
-        return(NULL)
+        NULL
       }
     } else { # png
       # check width and height are correct aspect ratio
       grid.raster(img, x = x, y = y, width = width, height = height,
                   hjust = hjust, vjust = vjust)
-      
     }
   },
   img = imgs, x = x, y = y,
